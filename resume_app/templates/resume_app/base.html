@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ SITE_NAME }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    <style>
+        body.professional .my-name {
+            color: #004d40;
+        }
+        body.professional .job {
+            color: #2b5490;
+        }
+        body.professional .blabla {
+            color: #72abff;
+        }
+    </style>
+
+</head>
+<body class="futuristic">
+    <div id="preloader">
+        <div class="spinner"></div>
+        <span class="loader-text">Loading...</span>
+    </div>
+    <div id="scroll-progress" role="progressbar" aria-label="Scroll progress"></div>
+    <nav class="bg-gray-900 p-4 shadow-lg sticky top-0 z-10" role="navigation">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/" aria-label="Home">
+                    <img src="{% static 'images/anandhu_ts_logo.png' %}" alt="Anandhu TS Logo" class="logo-img" id="mode-toggle">
+                </a>
+            </div>
+            <div class="hamburger" aria-label="Toggle menu" role="button">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="nav-links space-x-6 flex items-center">
+                <a href="#summary" class="nav-link" aria-label="Summary section">Summary</a>
+                <a href="#skills" class="nav-link" aria-label="Skills section">Skills</a>
+                <a href="#projects" class="nav-link" aria-label="Projects section">Projects</a>
+                <a href="#education" class="nav-link" aria-label="Education section">Education</a>
+                <a href="#training" class="nav-link" aria-label="Training section">Training</a>
+                <a href="{% url 'download_pdf' %}" class="nav-link download-btn" aria-label="Download resume PDF">Download PDF</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12" role="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p>© Anandhu TS 2025</p>
+            <div class="footer-links">
+                </div>
+            <p class="last-updated">Last Updated: March 09, 2025</p>
+        </div>
+    </footer>
+
+    <div id="back-to-top" role="button" aria-label="Back to top"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const logo = document.getElementById('mode-toggle');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-links');
+            const progressBar = document.getElementById('scroll-progress');
+            const backToTop = document.getElementById('back-to-top');
+            const preloader = document.getElementById('preloader');
+            const nav = document.querySelector('nav');
+            const savedMode = localStorage.getItem('mode') || 'futuristic';
+            body.classList.remove('futuristic', 'professional');
+            body.classList.add(savedMode);
+
+            // Preloader
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+            }, 1000);
+
+            // Mode toggle
+            logo.addEventListener('click', (e) => {
+                e.preventDefault();
+                const currentMode = body.classList.contains('futuristic') ? 'futuristic' : 'professional';
+                const newMode = currentMode === 'futuristic' ? 'professional' : 'futuristic';
+                body.classList.remove('futuristic', 'professional');
+                body.classList.add(newMode);
+                localStorage.setItem('mode', newMode);
+            });
+
+            // Hamburger menu toggle
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+
+            // Scroll progress, back-to-top, and navbar shrink
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                progressBar.style.width = `${scrollPercent}%`;
+                backToTop.classList.toggle('visible', scrollTop > 300);
+                nav.classList.toggle('shrink', scrollTop > 50);
+            });
+
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Highlight active nav link
+            const sections = document.querySelectorAll('section[id]');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    if (window.scrollY >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Section title animation
+            const titleObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        titleObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('.section-title').forEach(title => {
+                titleObserver.observe(title);
+            });
+
+            // Card scroll reveal
+            const cardObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('reveal');
+                        cardObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.card').forEach(card => {
+                cardObserver.observe(card);
+            });
+
+            // Animation observer
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-on-scroll').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

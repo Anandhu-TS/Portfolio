@@ -1,0 +1,98 @@
+{% extends 'resume_app/base.html' %}
+{% load static %}
+{% block content %}
+    <section class="text-center py-12 animate-on-scroll relative"><br><br><br>
+        <div class="profile-bg absolute inset-0 bg-gradient-to-b from-gray-900 to-transparent opacity-50 z-0"></div>
+        <div class="relative z-10">
+            {% if profile.photo %}
+                <img src="{{ profile.photo.url }}" alt="{{ profile.name }}" class="w-40 h-40 mx-auto mb-6 profile-img">
+            {% else %}
+                <img src="https://via.placeholder.com/160" alt="Placeholder" class="w-40 h-40 mx-auto mb-6 profile-img">
+            {% endif %}
+            <h1 class="text-5xl font-bold text-purple-400 hover:text-purple-300 transition duration-300 my-name">{{ profile.name }}</h1>
+            <p class="text-xl text-gray-300 mt-2 job">{{ profile.title }}</p>
+            <div class="mt-6 space-x-4 text-sm intro-links">
+                <span>{{ profile.email }}</span> | 
+                <span>{{ profile.phone }}</span> | 
+                <a href="{{ profile.linkedin }}" target="_blank" class="text-purple-400">LinkedIn</a> | 
+                <span>{{ profile.location }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="summary" class="py-12 animate-on-scroll">
+        <h2 class="section-title">Summary</h2>
+        <div class="mt-6 card p-6" data-tooltip="Professional Overview">
+            <p class="text-gray-300 leading-relaxed blabla">{{ profile.summary }}</p>
+        </div>
+    </section>
+
+    <section id="skills" class="py-12 animate-on-scroll">
+        <h2 class="section-title">Skills</h2>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% regroup skills by category as skill_groups %}
+            {% for group in skill_groups %}
+                <div class="card p-4" data-tooltip="{{ group.grouper }}">
+                    <p class="font-semibold text-purple-400 job">{{ group.grouper }}</p>
+                    <ul class="text-gray-300 mt-2 list-disc list-inside">
+                        {% for skill in group.list %}
+                            <li class="blabla">{{ skill.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="projects" class="py-12 animate-on-scroll">
+        <h2 class="section-title">Projects</h2>
+        <div class="mt-6 space-y-6">
+            {% for project in projects %}
+                <div class="card p-6 flex flex-col md:flex-row items-center" data-tooltip="{{ project.title }}">
+                    <div>
+                        <h3 class="text-xl font-semibold text-purple-400 hover:text-purple-300 job">{{ project.title }}</h3>
+                        <p class="mt-2 text-gray-300 blabla">{{ project.description }}</p>
+                        <p class="mt-2 text-gray-400"><strong>Technologies:</strong> {{ project.technologies }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-gray-400">No projects available.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="education" class="py-12 animate-on-scroll">
+        <h2 class="section-title">Education</h2>
+        <div class="mt-6 space-y-6">
+            {% for edu in educations %}
+                <div class="card p-6" data-tooltip="{{ edu.degree }}">
+                    <h3 class="text-xl font-semibold text-purple-400 hover:text-purple-300 job">{{ edu.degree }}</h3>
+                    <p class="text-gray-300 blabla">{{ edu.institution }} | {{ edu.duration }}</p>
+                    <p class="text-gray-400">CGPA: {{ edu.cgpa }}%</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="training" class="py-12 animate-on-scroll">
+        <h2 class="section-title">Training / Courses</h2>
+        <div class="mt-6 card p-6" data-tooltip="Certifications">
+            <ul class="list-disc list-inside text-gray-300">
+                {% for training in trainings %}
+                    <li class="blabla">{{ training.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section id="languages" class="py-12 animate-on-scroll">
+        <h2 class="section-title">Languages</h2>
+        <div class="mt-6 card p-6" data-tooltip="Language Proficiency">
+            <ul class="list-disc list-inside text-gray-300">
+                {% for language in languages %}
+                    <li class="blabla">{{ language.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endblock %}
